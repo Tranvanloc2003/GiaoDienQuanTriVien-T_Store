@@ -1,9 +1,12 @@
+import 'dart:ui';
+
 import 'package:admin_panel/data/repository/order/order_repository.dart';
 import 'package:admin_panel/features/shop/models/order_model.dart';
 import 'package:admin_panel/utils/constants/enums.dart';
 import 'package:admin_panel/utils/popups/loaders.dart';
 import 'package:get/get.dart';
 import 'package:admin_panel/utils/helpers/pdf_helper.dart';
+import 'package:flutter/material.dart';
 
 class OrderController extends GetxController {
   static OrderController get instance => Get.find();
@@ -12,10 +15,15 @@ class OrderController extends GetxController {
   final RxList<QuanliDonHangModel> orders = <QuanliDonHangModel>[].obs;
   final isLoading = false.obs;
 
+  // Add new variables for search
+  final searchController = TextEditingController();
+  RxList<QuanliDonHangModel> filteredOrders = <QuanliDonHangModel>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     taiDonhang();
+    filteredOrders.assignAll(orders);
   }
 
   Future<void> taiDonhang() async {
@@ -23,6 +31,7 @@ class OrderController extends GetxController {
       isLoading.value = true;
       final allOrders = await _orderRepository.layTatCaDonHang();
       orders.assignAll(allOrders);
+      filteredOrders.assignAll(orders);
     } catch (e) {
       TLoaders.errorSnackBar(title: 'Lỗi', message: e.toString());
     } finally {
@@ -72,5 +81,23 @@ class OrderController extends GetxController {
         message: 'Không thể xuất PDF: ${e.toString()}',
       );
     }
+  }
+
+  // Add new method for search
+  void searchOrders(String query) {
+    if (query.isEmpty) {
+      filteredOrders.assignAll(orders);
+    } else {
+      filteredOrders.assignAll(orders.where((order) {
+        final String searchQuery = query.toLowerCase();
+        return order.maDonHang.toLowerCase().contains(searchQuery);
+      }));
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 }

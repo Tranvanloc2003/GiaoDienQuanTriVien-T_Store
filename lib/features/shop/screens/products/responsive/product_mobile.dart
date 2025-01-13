@@ -37,23 +37,34 @@ class ProductMobileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
+              TextField(
+                controller: controller.searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Tìm kiếm sản phẩm...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) => controller.searchProducts(value),
+              ),
+              const SizedBox(height: TSizes.spaceBtwItems),
+              
               Obx(() {
                 if (controller.dangTaiDuLieu.value) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (controller.danhSachSanPhamNoiBat.isEmpty) {
+                if (controller.filteredProducts.isEmpty) {
                   return const Center(child: Text('Không có sản phẩm nào'));
                 }
 
                 return TGridLayout(
-                  itemCount: controller.danhSachSanPhamNoiBat.length,
+                  itemCount: controller.filteredProducts.length,
                   mainAxisExtent: 280,
                   itemBuilder: (_, index) => ProductCardAdmin(
-                    sanPham: controller.danhSachSanPhamNoiBat[index],
+                    sanPham: controller.filteredProducts[index],
                     onPressed: () {
                       Get.to(() => EditProductScreen(
-                        product: controller.danhSachSanPhamNoiBat[index]
+                        product: controller.filteredProducts[index]
                       ));
                     },
                   ),

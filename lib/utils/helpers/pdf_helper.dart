@@ -121,9 +121,7 @@ class PdfHelper {
     try {
       final fontData = await rootBundle.load('assets/fonts/pdf/times.ttf');
       final ttf = pw.Font.ttf(fontData);
-
       final pdf = pw.Document();
-
       pdf.addPage(
         pw.MultiPage(
           theme: pw.ThemeData.withFont(base: ttf),
@@ -224,7 +222,7 @@ class PdfHelper {
         onLayout: (format) => pdf.save(),
       );
     } catch (e) {
-      print('Error generating PDF: $e'); // Debug print
+      print('LỗiLỗi PDF: $e'); // Debug print
       rethrow;
     }
   }

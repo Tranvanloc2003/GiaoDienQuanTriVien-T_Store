@@ -24,8 +24,7 @@ class Routes {
 
   // Category management
   static const categories = '/categories';
-  static const taoDanhMuc = '/taoDanhMuc';
-  static const editCategory = '/editCategory';
+
 
   // Brand management
   static const brands = '/brands';

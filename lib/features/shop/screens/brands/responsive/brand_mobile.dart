@@ -36,24 +36,40 @@ class BrandMobile extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(TSizes.defaultSpace),
-          child: Obx(
-            () => Column(
-              children: [
-                if (brandController.isLoading.value)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: brandController.allBrands.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
-                    itemBuilder: (context, index) {
-                      final brand = brandController.allBrands[index];
-                      return BrandCard(brand: brand);
-                    },
-                  ),
-              ],
-            ),
+          child: Column(
+            children: [
+              // Add search field
+              TextField(
+                controller: brandController.searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Tìm kiếm thương hiệu...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) => brandController.searchBrands(value),
+              ),
+              const SizedBox(height: TSizes.spaceBtwItems),
+
+              Obx(
+                () => Column(
+                  children: [
+                    if (brandController.isLoading.value)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: brandController.filteredBrands.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: TSizes.spaceBtwItems),
+                        itemBuilder: (context, index) {
+                          final brand = brandController.filteredBrands[index];
+                          return BrandCard(brand: brand);
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

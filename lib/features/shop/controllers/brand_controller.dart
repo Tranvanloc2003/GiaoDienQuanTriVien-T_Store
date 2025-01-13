@@ -5,8 +5,8 @@ import 'package:admin_panel/features/shop/models/brand_model.dart';
 import 'package:admin_panel/features/shop/models/product_model.dart';
 import 'package:admin_panel/utils/popups/loaders.dart';
 import 'package:get/get.dart';
-
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
 
 class BrandController extends GetxController {
   static BrandController get instance => Get.find();
@@ -18,9 +18,14 @@ class BrandController extends GetxController {
   final brandRepository = Get.put(BrandRepository());
   final brandImageFile = Rx<XFile?>(null);
 
+  // Add new variables for search
+  final searchController = TextEditingController();
+  RxList<QuanliThuongHieuModel> filteredBrands = <QuanliThuongHieuModel>[].obs;
+
   @override
   void onInit() {
     layThuongHieuNoiBat(); // Load brands when controller initializes
+    filteredBrands.assignAll(allBrands);
     super.onInit();
   }
 
@@ -34,6 +39,7 @@ class BrandController extends GetxController {
       allBrands.assignAll(brandsList);
       featuredBrands.assignAll(
           allBrands.where((brand) => brand.noiBat ?? false).take(4));
+      filteredBrands.assignAll(allBrands);
     } catch (e) {
       TLoaders.errorSnackBar(title: "Ôi Không!", message: e.toString());
     } finally {
@@ -134,5 +140,22 @@ class BrandController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // Add new method for search
+  void searchBrands(String query) {
+    if (query.isEmpty) {
+      filteredBrands.assignAll(allBrands);
+    } else {
+      filteredBrands.assignAll(allBrands.where((brand) {
+        return brand.tenThuongHieu.toLowerCase().contains(query.toLowerCase());
+      }));
+    }
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 }

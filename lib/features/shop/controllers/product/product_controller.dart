@@ -24,6 +24,10 @@ class ProductController extends GetxController {
   late TextEditingController tonKhoController;
   late TextEditingController moTaController;
 
+  // Add new variables for search
+  final searchController = TextEditingController();
+  RxList<QuanliSanPhamModel> filteredProducts = <QuanliSanPhamModel>[].obs;
+
   // Observable variables
   RxList<QuanliSanPhamModel> danhSachSanPhamNoiBat = <QuanliSanPhamModel>[].obs;
   final dangTaiDuLieu = false.obs;
@@ -46,6 +50,7 @@ class ProductController extends GetxController {
     super.onInit();
     khoiTaoController();
     layDanhSachSanPhamNoiBat();
+    filteredProducts.assignAll(danhSachSanPhamNoiBat);
   }
 
   void khoiTaoController() {
@@ -188,6 +193,7 @@ class ProductController extends GetxController {
       dangTaiDuLieu.value = true;
       final products = await _khoSanPham.laySanPhamNoiBat(limit: -1);
       danhSachSanPhamNoiBat.assignAll(products);
+      filteredProducts.assignAll(danhSachSanPhamNoiBat);
     } catch (e) {
       TLoaders.errorSnackBar(title: "Ôi Không!", message: e.toString());
     } finally {
@@ -307,8 +313,21 @@ class ProductController extends GetxController {
     }
   }
 
+
+  void searchProducts(String query) {
+    if (query.isEmpty) {
+      filteredProducts.assignAll(danhSachSanPhamNoiBat);
+    } else {
+      filteredProducts.assignAll(danhSachSanPhamNoiBat.where((product) {
+        return product.tenSanPham.toLowerCase().contains(query.toLowerCase()) ||
+               product.maSKU!.toLowerCase().contains(query.toLowerCase());
+      }));
+    }
+  }
+
   @override
   void dispose() {
+    searchController.dispose();
     resetForm();
     tieuDeController.dispose();
     giaController.dispose();
@@ -318,4 +337,3 @@ class ProductController extends GetxController {
     super.dispose();
   }
 }
- 

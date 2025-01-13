@@ -3,8 +3,6 @@ import 'package:admin_panel/utils/device/device_utility.dart';
 import 'package:get/get.dart';
 
 class SidebarController extends GetxController{
-  // 
-  
   final activeItem = Routes.responsiveDesignTutorialScreen.obs;
   final hoverItem = ''.obs;
 
@@ -13,22 +11,26 @@ class SidebarController extends GetxController{
   }
 
   void changeHoverItem(String route){
-    if(!isActive(route)) hoverItem.value = route;
+    hoverItem.value = route;
+  }
 
-
-  } 
   bool isActive(String route){
     return activeItem.value == route;
   }
+
   bool isHovering(String route){
     return hoverItem.value == route;
-  } 
-  void menuOnTap(String route){
-    if(!isActive(route)){
-      changeActiveItem(route);
-    if(TDeviceUtils.isMobileScreen(Get.context!)) Get.back();
+  }
 
-    Get.toNamed(route);
+  void menuOnTap(String route){
+    // Clear hover state when clicking
+    hoverItem.value = '';
+    
+    // Always allow navigation when clicking
+    changeActiveItem(route);
+    if(TDeviceUtils.isMobileScreen(Get.context!)) {
+      Get.back();
     }
+    Get.toNamed(route);
   }
 }
